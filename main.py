@@ -1,11 +1,13 @@
+from update import liveData, updateThread
 import pandas as pd
+from search import searchRecipe
+import datetime
+import sys
 
 #test variables
-date = "01-01-2021"
+today = ""
 products = pd.read_json(r"database.json")
-
-def updateData():
-	print("update")
+_liveData=liveData(products, today)
 
 def main_menu(x):
 	if(x==9):
@@ -13,30 +15,31 @@ def main_menu(x):
 		x = int(input(""))
 		main_menu(x)
 	elif(x==1):
-		products = pd.read_json(r"database.json")
-		print(products)
+		print(_liveData.products)
 		opt = int(input("type 1 to add, 2 to change reminder, 0 to go back\n"))
 		if(opt==1):
 			name = input("enter name: ")
-			date = input("enter date: ")
-			adding = pd.DataFrame(
-				[[name, date, 2]], columns=list(["Products", "Expiry Dates", "Remind Before(weeks)"]))
-			products=products.append(adding, ignore_index=True)
+			date = input("enter date(YYYY-mm-dd): ")
+			year, month, day = map(int, date.split('-'))
+			date = datetime.date(year, month, day)
+			
+			main_menu(1)
 		elif(opt==2):
 			indx = int(input("Which product you want to change the reminder of(enter index): "))
 			remind = input("Enter reminder deadline in weeks: ")
-			products.at[indx, "Remind Before(weeks)"] = remind
-			print(products)
-		elif(opt==0):
-			main_menu(9)
-			
-		products.to_json(r"database.json")
-		main_menu(1)
+			_liveData.products.at[indx, "remind"] = remind
+			_liveData.products.to_json(r"database.json")
+			main_menu(1)
+		else: main_menu(9)
 	elif(x==2):
 		name = input("Search Recepie with: ")
-		#print results
+		srch = searchRecipe(name)
+		print(*srch.searchResults(), sep="\n")
 		main_menu(9)
-	else: return 0
+	else: sys.exit()
 
 
+updateData = updateThread(_liveData)
+updateData.daemon = True
+updateData.start()
 main_menu(9)
