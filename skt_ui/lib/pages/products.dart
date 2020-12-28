@@ -14,11 +14,11 @@ class ProductClass {
   ProductClass({this.name, this.date, this.remind});
   static List<ProductClass> getProducts() {
     return <ProductClass>[
-      ProductClass(name: 'muz', date: '01-02-2021', remind: 2),
-      ProductClass(name: 'elma', date: '10-02-2021', remind: 2),
-      ProductClass(name: 'armut', date: '01-03-2021', remind: 2),
-      ProductClass(name: 'sut', date: '10-01-2021', remind: 2),
-      ProductClass(name: 'yumurta', date: '20-01-2021', remind: 2)
+      ProductClass(name: 'banana', date: '01-02-2021', remind: 2),
+      ProductClass(name: 'apple', date: '10-02-2021', remind: 2),
+      ProductClass(name: 'avocado', date: '01-03-2021', remind: 2),
+      ProductClass(name: 'milk', date: '10-01-2021', remind: 2),
+      ProductClass(name: 'mango', date: '20-01-2021', remind: 2)
     ];
   }
 }
@@ -81,6 +81,20 @@ class _ProductsState extends State<Products> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          MaterialButton(
+            child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                SlideRoute(page: Notifications(), offset: Offset(1, 0)),
+              );
+            },
+          ),
+        ],
         title: Text(
           'Products',
           style: textStyle,
@@ -88,8 +102,8 @@ class _ProductsState extends State<Products> {
       ),
       body: Column(
         children: <Widget>[
+          emptySpace,
           Center(
-            heightFactor: 0.146.h,
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(

@@ -12,6 +12,20 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          MaterialButton(
+            child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                SlideRoute(page: Notifications(), offset: Offset(1, 0)),
+              );
+            },
+          ),
+        ],
         title: Text(
           'Search Recipe',
           style: textStyle,
@@ -19,8 +33,8 @@ class _SearchState extends State<Search> {
       ),
       body: Column(
         children: <Widget>[
+          emptySpace,
           Center(
-            heightFactor: 0.2.h,
             child: Container(
               width: 95.0.w,
               child: TextField(
