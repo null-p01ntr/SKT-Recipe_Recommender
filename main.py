@@ -2,12 +2,12 @@ from update import liveData, updateThread
 from search import searchRecipe
 import pandas as pd
 import datetime
+import time
 import sys
 
 # test variables
-today = ""
 products = pd.read_json(r"database.json")
-_liveData = liveData(products, today)
+_liveData = liveData(products)
 
 
 def main_menu(x):
@@ -23,13 +23,24 @@ def main_menu(x):
             date = input("enter date(YYYY-mm-dd): ")
             year, month, day = map(int, date.split('-'))
             date = datetime.date(year, month, day)
+            products = _liveData.products
+            updateData.lock.acquire()
+            adding = pd.DataFrame(
+                [[name, date, 2]], columns=list(["name", "date", "remind"]))
+            products = products.append(adding, ignore_index=True)
+            products.to_json(r"database.json", indent=4)
+            updateData.lock.release()
+            time.sleep(0.5)
             main_menu(1)
         elif(opt == 2):
             indx = int(
                 input("Which product you want to change the reminder of(enter index): "))
             remind = input("Enter reminder deadline in weeks: ")
+            updateData.lock.acquire()
             _liveData.products.at[indx, "remind"] = remind
-            _liveData.products.to_json(r"database.json")
+            _liveData.products.to_json(r"database.json", indent=4)
+            updateData.lock.release()
+            time.sleep(0.5)
             main_menu(1)
         else:
             main_menu(9)

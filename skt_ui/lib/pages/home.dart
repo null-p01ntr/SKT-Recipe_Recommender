@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:skt_ui/pages/search.dart';
+import 'package:skt_ui/pages/products.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:date_field/date_field.dart';
-import 'products.dart';
+
+import 'package:skt_ui/main.dart' as m;
 
 class Home extends StatefulWidget {
   @override
@@ -18,24 +20,19 @@ TextStyle textStyle =
 SizedBox emptySpace = SizedBox(height: 3.0.h);
 
 class _HomeState extends State<Home> {
-  // Properties & Variables needed
-
-  int currentTab = 1; // to keep track of active tab index
+  int currentTab = 1;
   final List<Widget> screens = [
     Products(),
     Search(),
-  ]; // to store nested tabs
+  ];
   final PageStorageBucket bucket = PageStorageBucket();
-  Widget currentScreen = Products(); // Our first view in viewport
+  Widget currentScreen = Products();
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(//return LayoutBuilder
-        builder: (context, constraints) {
-      return OrientationBuilder(//return OrientationBuilder
-          builder: (context, orientation) {
-        //initialize SizerUtil()
-        SizerUtil().init(constraints, orientation); //initialize SizerUtil
+    return LayoutBuilder(builder: (context, constraints) {
+      return OrientationBuilder(builder: (context, orientation) {
+        SizerUtil().init(constraints, orientation);
         return Scaffold(
           body: PageStorage(
             child: currentScreen,
@@ -266,13 +263,43 @@ class _NotificationsState extends State<Notifications> {
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                ("apple, banana and mango is about expire, heres some recepies you can use:\n" +
-                    "https://www.yummly.com/recipes/apple-mango-and-banana-smoothie\n" +
-                    "https://www.emilieeats.com/banana-mango-avocado-green-smoothie/\n" +
-                    "https://meaningfuleats.com/green-smoothie-week-mango-avocado-smoothie/\n" +
-                    "https://www.familyfreshmeals.com/2014/06/avocado-mango-smoothie.html\n" +
-                    "https://cookpad.com/ng/search/avocado%20mango%20and%20banana%20smoothie\n"),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.orangeAccent,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'apple, banana and mango is about expire, heres some recepies you can use: ',
+                      style: textStyle.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    ("https://www.yummly.com/recipes/apple-mango-and-banana-smoothie\n" +
+                        "https://www.emilieeats.com/banana-mango-avocado-green-smoothie/\n" +
+                        "https://meaningfuleats.com/green-smoothie-week-mango-avocado-smoothie/\n" +
+                        "https://www.familyfreshmeals.com/2014/06/avocado-mango-smoothie.html\n" +
+                        "https://cookpad.com/ng/search/avocado%20mango%20and%20banana%20smoothie\n"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: RaisedButton(
+                child: Text('Test Notification Trigger'),
+                onPressed: () async {
+                  await m.showNotification();
+                },
               ),
             ),
           ),

@@ -8,4 +8,4 @@ class searchRecipe:
     def searchResults(self):
         # devide string to list
         # search for every combination
-        return search(" recipes with " + self.searchFor, 5)
+        return search(" recipes " + self.searchFor, 5)
