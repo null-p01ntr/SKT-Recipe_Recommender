@@ -65,14 +65,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Future<void> showNotification() async {
+Future<void> showNotification(String notif) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
     'your channel id',
     'your channel name',
     'your channel description',
-    importance: Importance.defaultImportance,
-    priority: Priority.defaultPriority,
+    importance: Importance.max,
+    priority: Priority.high,
     ticker: 'ticker',
     styleInformation: BigTextStyleInformation(''),
   );
@@ -81,8 +81,8 @@ Future<void> showNotification() async {
   await flutterLocalNotificationsPlugin.show(
     0,
     'You have some new recipe suggestions',
-    'apple, banana and mango is about expire, check out the recepies we found for you',
+    notif + ' is about expire, check out the recepies we found for you',
     platformChannelSpecifics,
-    payload: 'item x',
+    payload: 'item x', //redirect to notifications page
   );
 }

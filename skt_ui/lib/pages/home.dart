@@ -4,6 +4,7 @@ import 'package:skt_ui/pages/products.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:date_field/date_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:skt_ui/main.dart' as m;
 
@@ -254,18 +255,36 @@ class _NotificationsState extends State<Notifications> {
       body: Column(
         children: [
           emptySpace,
-          SizedBox(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.orangeAccent,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(20),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.orangeAccent,
+                width: 2,
               ),
-              child: Column(
-                children: [
-                  Container(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Avocado is about expire, heres some recepies you can use: ',
+                  style: textStyle.copyWith(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  textWidthBasis: TextWidthBasis.longestLine,
+                ),
+                FlatButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () async {
+                    const url =
+                        'https://www.olivemagazine.com/guides/best-ever/best-ever-avocado-recipes';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.orangeAccent,
@@ -273,23 +292,114 @@ class _NotificationsState extends State<Notifications> {
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text(
-                      'apple, banana and mango is about expire, heres some recepies you can use: ',
-                      style: textStyle.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            "https://images.immediate.co.uk/production/volatile/sites/2/2015/12/19432.jpg?webp=true&quality=90&resize=600%2C255",
+                            height: 100.0,
+                            width: 100.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Text(
+                          ("Easy avocado recipes -\nolive magazine"),
+                          style: textStyle.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    ("https://www.yummly.com/recipes/apple-mango-and-banana-smoothie\n" +
-                        "https://www.emilieeats.com/banana-mango-avocado-green-smoothie/\n" +
-                        "https://meaningfuleats.com/green-smoothie-week-mango-avocado-smoothie/\n" +
-                        "https://www.familyfreshmeals.com/2014/06/avocado-mango-smoothie.html\n" +
-                        "https://cookpad.com/ng/search/avocado%20mango%20and%20banana%20smoothie\n"),
+                ),
+                FlatButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () async {
+                    const url =
+                        'https://www.delish.com/cooking/recipe-ideas/g2894/things-to-do-with-avocado/';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.orangeAccent,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            "https://hips.hearstapps.com/del.h-cdn.co/assets/16/18/1600x800/landscape-1462219238-delish-stuffed-avocados.jpg?resize=980:*",
+                            height: 100.0,
+                            width: 100.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Text(
+                          ("51 Avocado Recipes \nSo You Never Waste One Again -\ndelish.com"),
+                          style: textStyle.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+                FlatButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () async {
+                    const url =
+                        'https://www.loveandlemons.com/avocado-recipes/';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.orangeAccent,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            "https://cdn.loveandlemons.com/wp-content/uploads/2019/05/avocado-recipes.jpg",
+                            height: 100.0,
+                            width: 100.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Text(
+                          ("54 Avocado Recipes \nfor Every Meal -\n Love and Lemons"),
+                          style: textStyle.copyWith(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
           Expanded(
@@ -298,7 +408,7 @@ class _NotificationsState extends State<Notifications> {
               child: RaisedButton(
                 child: Text('Test Notification Trigger'),
                 onPressed: () async {
-                  await m.showNotification();
+                  await m.showNotification('Avocado');
                 },
               ),
             ),
