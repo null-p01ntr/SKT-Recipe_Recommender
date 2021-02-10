@@ -4,8 +4,10 @@ import 'package:skt_ui/pages/products.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:date_field/date_field.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:skt_ui/main.dart' as m;
 
 class Home extends StatefulWidget {
@@ -144,6 +146,21 @@ class Add extends StatefulWidget {
 
 class _AddState extends State<Add> {
   DateTime selectedDate = DateTime.now();
+  String product_name = '';
+  String final_response = '';
+  final _formkeyName = GlobalKey<FormState>();
+  final _formkeyDate = GlobalKey<FormState>();
+
+  void addProduct() async {
+    final validation = _formkeyName.currentState.validate() &
+        _formkeyDate.currentState.validate();
+    if (validation) {
+      _formkeyName.currentState.save();
+      _formkeyDate.currentState.save();
+    } else {
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,54 +186,81 @@ class _AddState extends State<Add> {
               SizedBox(height: 30.0.h),
               Container(
                 width: 95.0.w,
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(90),
+                child: Form(
+                  key: _formkeyName,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(90),
+                      ),
+                      hintText: 'Enter Product Name',
+                      hintStyle: textStyle.copyWith(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                      ),
+                      suffixIcon: Icon(Icons.camera_alt),
                     ),
-                    hintText: 'Enter Product Name',
-                    hintStyle: textStyle.copyWith(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                    ),
-                    suffixIcon: Icon(Icons.camera_alt),
+                    onSaved: (value) {
+                      product_name = value;
+                    },
                   ),
                 ),
               ),
               SizedBox(height: 5.0.h),
               Container(
-                width: 95.0.w,
-                child: DateTimeField(
-                  selectedDate: selectedDate,
-                  onDateSelected: (DateTime date) {
-                    setState(() {
-                      selectedDate = date;
-                    });
-                  },
-                  mode: DateFieldPickerMode.date,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2077),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(90),
+                  width: 95.0.w,
+                  child: Form(
+                    key: _formkeyDate,
+                    child: DateTimeField(
+                      selectedDate: selectedDate,
+                      onDateSelected: (DateTime date) {
+                        setState(() {
+                          selectedDate = date;
+                        });
+                      },
+                      mode: DateFieldPickerMode.date,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2077),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(90),
+                        ),
+                        suffixIcon: Icon(Icons.camera_alt),
+                      ),
+                      label: 'Enter Expiry Date',
+                      textStyle: textStyle.copyWith(
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                      ),
                     ),
-                    suffixIcon: Icon(Icons.camera_alt),
-                  ),
-                  label: 'Enter Expiry Date',
-                  textStyle: textStyle.copyWith(
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+                  )),
               emptySpace,
               RaisedButton(
                 color: Colors.orange,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(90)),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () async {
+                  addProduct();
+                  final response = await http.post(
+                    'https://10.0.2.2:5000/add_test',
+                    body: jsonEncode(
+                      {
+                        'name': product_name,
+                        'date': selectedDate.millisecondsSinceEpoch,
+                        'remind': 2,
+                        'notified': false,
+                      },
+                    ),
+                  );
+                  final test = await http.get("http://10.0.2.2:5000/add_test");
+                  final decoded =
+                      json.decode(test.body) as Map<String, dynamic>;
+                  final_response = decoded['response'];
+                  print(final_response);
+                  Navigator.of(context).pop();
+                },
                 child: Text(
                   'Add',
                   style: textStyle.copyWith(fontSize: 15),

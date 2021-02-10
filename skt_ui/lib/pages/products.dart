@@ -32,7 +32,7 @@ class _ProductsState extends State<Products> {
   List<ProductClass> products = List<ProductClass>();
 
   Future<List<ProductClass>> fetchProducts() async {
-    var response = await http.read(new Uri.http("10.0.2.2:5000", "/products"));
+    var response = await http.read("http://10.0.2.2:5000/products");
     List decoded = jsonDecode(response).values.toList();
     var _products = List<ProductClass>();
     for (int i = 0; i < decoded.length; i++) {
