@@ -4,8 +4,7 @@ import 'package:skt_ui/pages/products.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:date_field/date_field.dart';
-import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:simple_url_preview/simple_url_preview.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:skt_ui/main.dart' as m;
@@ -147,7 +146,6 @@ class Add extends StatefulWidget {
 class _AddState extends State<Add> {
   DateTime selectedDate = DateTime.now();
   String product_name = '';
-  String final_response = '';
   final _formkeyName = GlobalKey<FormState>();
   final _formkeyDate = GlobalKey<FormState>();
 
@@ -243,22 +241,16 @@ class _AddState extends State<Add> {
                     borderRadius: BorderRadius.circular(90)),
                 onPressed: () async {
                   addProduct();
+                  var post = jsonEncode({
+                    'name': product_name,
+                    'date': selectedDate.millisecondsSinceEpoch + 10800000,
+                    'remind': 2,
+                    'notified': false,
+                  });
                   final response = await http.post(
-                    'https://10.0.2.2:5000/add_test',
-                    body: jsonEncode(
-                      {
-                        'name': product_name,
-                        'date': selectedDate.millisecondsSinceEpoch,
-                        'remind': 2,
-                        'notified': false,
-                      },
-                    ),
+                    'http://10.0.2.2:5000/products',
+                    body: post,
                   );
-                  final test = await http.get("http://10.0.2.2:5000/add_test");
-                  final decoded =
-                      json.decode(test.body) as Map<String, dynamic>;
-                  final_response = decoded['response'];
-                  print(final_response);
                   Navigator.of(context).pop();
                 },
                 child: Text(
@@ -280,8 +272,22 @@ class Notifications extends StatefulWidget {
 }
 
 class _NotificationsState extends State<Notifications> {
+  List<dynamic> results = new List(10);
+
+  void suggest() async {
+    final post = await http.post(
+      'http://10.0.2.2:5000/search',
+      body: jsonEncode({'searchFor': 'avocado'}),
+    );
+    final response = await http.get("http://10.0.2.2:5000/search");
+    results = json.decode(response.body);
+  }
+
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      suggest();
+    });
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -300,13 +306,7 @@ class _NotificationsState extends State<Notifications> {
         children: [
           emptySpace,
           Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.orangeAccent,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
+            padding: EdgeInsets.all(5),
             child: Column(
               children: [
                 Text(
@@ -317,144 +317,34 @@ class _NotificationsState extends State<Notifications> {
                   ),
                   textWidthBasis: TextWidthBasis.longestLine,
                 ),
-                FlatButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () async {
-                    const url =
-                        'https://www.olivemagazine.com/guides/best-ever/best-ever-avocado-recipes';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.orangeAccent,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            "https://images.immediate.co.uk/production/volatile/sites/2/2015/12/19432.jpg?webp=true&quality=90&resize=600%2C255",
-                            height: 100.0,
-                            width: 100.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          ("Easy avocado recipes -\nolive magazine"),
-                          style: textStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                FlatButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () async {
-                    const url =
-                        'https://www.delish.com/cooking/recipe-ideas/g2894/things-to-do-with-avocado/';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.orangeAccent,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            "https://hips.hearstapps.com/del.h-cdn.co/assets/16/18/1600x800/landscape-1462219238-delish-stuffed-avocados.jpg?resize=980:*",
-                            height: 100.0,
-                            width: 100.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          ("51 Avocado Recipes \nSo You Never Waste One Again -\ndelish.com"),
-                          style: textStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                FlatButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () async {
-                    const url =
-                        'https://www.loveandlemons.com/avocado-recipes/';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.orangeAccent,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            "https://cdn.loveandlemons.com/wp-content/uploads/2019/05/avocado-recipes.jpg",
-                            height: 100.0,
-                            width: 100.0,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          ("54 Avocado Recipes \nfor Every Meal -\n Love and Lemons"),
-                          style: textStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
               ],
             ),
           ),
           Expanded(
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: RaisedButton(
-                child: Text('Test Notification Trigger'),
-                onPressed: () async {
-                  await m.showNotification('Avocado');
-                },
-              ),
+            child: ListView.builder(
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                return SimpleUrlPreview(
+                  url: results[index],
+                  previewHeight: 150,
+                  previewContainerPadding: EdgeInsets.all(7),
+                  titleStyle: textStyle,
+                  descriptionLines: 2,
+                  descriptionStyle: textStyle.copyWith(
+                      fontWeight: FontWeight.normal, fontSize: 17),
+                  siteNameStyle: textStyle.copyWith(fontSize: 13),
+                  imageLoaderColor: Colors.white,
+                );
+              },
+            ),
+          ),
+          Align(
+            alignment: FractionalOffset.bottomCenter,
+            child: RaisedButton(
+              child: Text('Test Notification Trigger'),
+              onPressed: () async {
+                await m.showNotification('Avocado');
+              },
             ),
           ),
         ],

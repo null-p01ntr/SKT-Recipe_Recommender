@@ -7,40 +7,35 @@ import json
 app = Flask(__name__)
 
 
-@app.route('/add_test', methods=['GET', 'POST'])
-def test():
-    global response
-    if(request.method == 'POST'):
-        new_product = request.data
-        response = new_product['name'] + new_product['date']
-        print(response)
-        return ''
-    else:
-        return jsonify({'response': response})
-
-
 @app.route('/products', methods=['GET', 'POST'])
 def products():
-    products = pd.read_json(r"./skt_ui/data/database.json")
+    global new_product
     if(request.method == 'POST'):
-        new_product = request.data
-        new_product = json.loads(new_product.decode('utf-8'))
-        response = new_product['name'] + new_product['date']
-        # adding = pd.DataFrame(new_product, columns=list(
-        # ["name", "date", "remind", "notified"]))
-        # products = products.append(adding, ignore_index=True)
-        # products.to_json(r"database.json", indent=4)
+        products = pd.read_json(r"./skt_ui/data/database.json")
+        new_product = json.loads(request.data.decode('utf-8'))
+        adding = pd.DataFrame(
+            [[new_product['name'], new_product['date'],
+                new_product['remind'], new_product['notified']]],
+            columns=list(['name', 'date', 'remind', 'notified']))
+        products = products.append(adding, ignore_index=True)
+        products.to_json(r"./skt_ui/data/database.json", indent=4)
         return ''
     elif(request.method == 'GET'):
+        products = pd.read_json(r"./skt_ui/data/database.json")
         products = products.sort_values(by="date")
         products = products.reset_index(drop=True)
         products["date"] = products["date"].dt.strftime("%d-%m-%Y")
         return jsonify(products.to_dict(orient='index'))
+        # return jsonify(new_product)
 
 
-@app.route('/search', methods=['GET'])
-def searchFor(ing):
-    return jsonify(search(ing + " recipes", 5))
+@app.route('/search', methods=['GET', 'POST'])
+def searchRecipe():
+    global response
+    if(request.method == 'POST'):
+        response = json.loads(request.data.decode('utf-8'))
+    elif(request.method == 'GET'):
+        return jsonify(search(response['searchFor'] + ' recipes', 10))
 
 
 if __name__ == '__main__':
