@@ -69,7 +69,7 @@ Future<void> showNotification(String notif) async {
   const AndroidNotificationDetails androidPlatformChannelSpecifics =
       AndroidNotificationDetails(
     'your channel id',
-    'your channel name',
+    'Upcoming Recipe Alert',
     'your channel description',
     importance: Importance.max,
     priority: Priority.high,

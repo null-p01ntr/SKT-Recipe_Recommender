@@ -1,80 +1,58 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:skt_ui/pages/home.dart';
 import 'package:sizer/sizer.dart';
-
-class Products extends StatefulWidget {
-  @override
-  _ProductsState createState() => _ProductsState();
-}
+import 'package:http/http.dart' as http;
 
 class ProductClass {
   String name;
   String date;
   int remind;
   ProductClass({this.name, this.date, this.remind});
-  static List<ProductClass> getProducts() {
-    return <ProductClass>[
-      ProductClass(name: 'banana', date: '01-02-2021', remind: 2),
-      ProductClass(name: 'apple', date: '10-02-2021', remind: 2),
-      ProductClass(name: 'avocado', date: '01-03-2021', remind: 2),
-      ProductClass(name: 'milk', date: '10-01-2021', remind: 2),
-      ProductClass(name: 'mango', date: '20-01-2021', remind: 2)
-    ];
-  }
+
+  // ProductClass.fromJson(Map<String, dynamic> json)
+  //     : name = json['name'],
+  //       date = json['date'],
+  //       remind = json['remind'];
+
+  // Map<String, dynamic> toJson() => {
+  //       'name': name,
+  //       'date': date,
+  //       'remind': remind,
+  //     };
+}
+
+class Products extends StatefulWidget {
+  @override
+  _ProductsState createState() => _ProductsState();
 }
 
 class _ProductsState extends State<Products> {
-  List<ProductClass> products;
+  List<ProductClass> products = List<ProductClass>();
 
-  DataTable productTable() {
-    return DataTable(
-      columns: [
-        DataColumn(
-          label: Text('Name'),
-          numeric: false,
-          tooltip: "Name of the product",
-        ),
-        DataColumn(
-          label: Text('Expiry Date'),
-          numeric: false,
-          tooltip: "Expiry date of the product",
-        ),
-        DataColumn(
-          label: Text('Remind Before'),
-          numeric: true,
-          tooltip: "how many weeks before notify to use the product",
-        ),
-      ],
-      rows: products
-          .map(
-            (product) => DataRow(
-              cells: [
-                DataCell(Text(product.name)),
-                DataCell(Text(product.date)),
-                DataCell(
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(product.remind.toString()),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.05,
-                        ),
-                        Icon(Icons.edit)
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-          .toList(),
-    );
+  Future<List<ProductClass>> fetchProducts() async {
+    var response = await http.read(new Uri.http("10.0.2.2:5000", "/products"));
+    List decoded = jsonDecode(response).values.toList();
+    var _products = List<ProductClass>();
+    for (int i = 0; i < decoded.length; i++) {
+      _products.add(
+        ProductClass(
+            name: decoded[i]['name'],
+            date: decoded[i]['date'],
+            remind: decoded[i]['remind']),
+      );
+    }
+    return _products;
   }
 
   @override
   void initState() {
-    products = ProductClass.getProducts();
+    fetchProducts().then((value) {
+      setState(() {
+        products = value;
+      });
+    });
     super.initState();
   }
 
@@ -102,6 +80,7 @@ class _ProductsState extends State<Products> {
       ),
       body: Column(
         children: <Widget>[
+          /*FutureBuilder(future:),*/
           emptySpace,
           Center(
             child: Container(
@@ -112,7 +91,50 @@ class _ProductsState extends State<Products> {
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: productTable(),
+              child: DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('Name'),
+                    numeric: false,
+                    tooltip: "Name of the product",
+                  ),
+                  DataColumn(
+                    label: Text('Expiry Date'),
+                    numeric: false,
+                    tooltip: "Expiry date of the product",
+                  ),
+                  DataColumn(
+                    label: Text('Remind Before'),
+                    numeric: true,
+                    tooltip: "how many weeks before notify to use the product",
+                  ),
+                ],
+                rows: products
+                    .map(
+                      (product) => DataRow(
+                        cells: [
+                          DataCell(Text(product.name)),
+                          DataCell(Text(product.date)),
+                          DataCell(
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(product.remind.toString()),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.05,
+                                  ),
+                                  Icon(Icons.edit)
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           )
         ],
