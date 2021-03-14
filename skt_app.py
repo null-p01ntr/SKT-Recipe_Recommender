@@ -7,6 +7,11 @@ import json
 app = Flask(__name__)
 
 
+@app.route('/')
+def hello_world():
+    return 'SKT Running'
+
+
 @app.route('/products', methods=['GET', 'POST'])
 def products():
     global new_product
@@ -39,4 +44,4 @@ def searchRecipe():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
