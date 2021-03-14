@@ -1,1 +1,1 @@
-web: gunicorn app:skt_app
+web: gunicorn application:skt_app
