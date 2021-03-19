@@ -62,11 +62,10 @@ class _SearchState extends State<Search> {
                         searchFor = str;
                       });
                       final post = await http.post(
-                        'http://10.0.2.2:5000/search',
+                        host + '/search',
                         body: jsonEncode({'searchFor': searchFor}),
                       );
-                      final response =
-                          await http.get("http://10.0.2.2:5000/search");
+                      final response = await http.get(host + "/search");
                       results = json.decode(response.body);
                     },
                   ),
