@@ -20,7 +20,11 @@ Color inactive = Colors.grey;
 TextStyle textStyle =
     TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
 SizedBox emptySpace = SizedBox(height: 3.0.h);
-String host = "https://skt-recipe-recommender.herokuapp.com/";
+
+bool debug = false;
+String host = debug
+    ? "http://10.0.2.2:5000/"
+    : "https://skt-recipe-recommender.herokuapp.com/";
 
 class _HomeState extends State<Home> {
   int currentTab = 1;
